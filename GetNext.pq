@@ -1,8 +1,11 @@
 let
     Source = (cursor as nullable text) as table =>
 let
+    query = if cursor <> null 
+                then "{""query"": ""{next_items_page(limit:500, cursor: \"""  & cursor & "\"" ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}"
+                else "{""query"": ""{next_items_page(limit:500, cursor: invalidCursorOnPurpose ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}",
 
-    web = if cursor <> null then Web.Contents(
+    web =  Web.Contents(
         "https://api.monday.com/" & "v2",
     [
         Headers=[
@@ -10,17 +13,7 @@ let
             #"Content-Type"="application/json",
             #"Authorization"="YOUR_TOKEN_HERE"
             ],
-            Content=Text.ToBinary("{""query"": ""{next_items_page(limit:500, cursor: \"""  & cursor & "\"" ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}")
-            ]
-    ) else Web.Contents(
-        "https://api.monday.com/" & "v2",
-    [
-        Headers=[
-            #"Method"="POST",
-            #"Content-Type"="application/json",
-            #"Authorization"="YOUR_TOKEN_HERE"
-            ],
-            Content=Text.ToBinary("{""query"": ""{next_items_page(limit:500, cursor: invalidCursorOnPurpose ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}")
+            Content=Text.ToBinary(query)
             ]
     ) ,
     #"2ndJSON" = Json.Document(web, 65001),

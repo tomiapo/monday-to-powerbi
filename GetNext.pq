@@ -1,0 +1,34 @@
+let
+    Source = (cursor as nullable text) as table =>
+let
+
+    web = if cursor <> null then Web.Contents(
+        "https://api.monday.com/" & "v2",
+    [
+        Headers=[
+            #"Method"="POST",
+            #"Content-Type"="application/json",
+            #"Authorization"="YOUR_TOKEN_HERE"
+            ],
+            Content=Text.ToBinary("{""query"": ""{next_items_page(limit:500, cursor: \"""  & cursor & "\"" ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}")
+            ]
+    ) else Web.Contents(
+        "https://api.monday.com/" & "v2",
+    [
+        Headers=[
+            #"Method"="POST",
+            #"Content-Type"="application/json",
+            #"Authorization"="YOUR_TOKEN_HERE"
+            ],
+            Content=Text.ToBinary("{""query"": ""{next_items_page(limit:500, cursor: invalidCursorOnPurpose ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}")
+            ]
+    ) ,
+    #"2ndJSON" = Json.Document(web, 65001),
+    data1 = #"2ndJSON"[data][next_items_page],
+    errors = try #"2ndJSON"[errors] otherwise null,
+
+#"Converted to Table1" = if errors <> null then Record.ToTable(Json.Document("{""error_code"": ""CursorException""}")) else Record.ToTable(data1)
+in
+   #"Converted to Table1"
+in 
+    Source

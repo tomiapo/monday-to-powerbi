@@ -3,7 +3,7 @@ let
 let
     query = if cursor <> null 
                 then "{""query"": ""{next_items_page(limit:500, cursor: \"""  & cursor & "\"" ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}"
-                else "{""query"": ""{next_items_page(limit:500, cursor: \""invalidCursorOnPurpose\"" ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}", else
+                else "{""query"": ""{next_items_page(limit:500, cursor: \""invalidCursorOnPurpose\"" ){cursor items { id name group {title} column_values (ids: [\""numbers\"", \""date\"", \""status\"", \""dropdown2\"", \""dropdown28\""]) { id value text column {title}}}}}""}", 
 
     web =  Web.Contents(
         "https://api.monday.com/" & "v2",
